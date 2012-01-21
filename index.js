@@ -5,6 +5,42 @@ var _ = require('underscore');
 var mixins = {};
 
 /**
+ * Takes a nested object and returns a flattened, shallow object keyed with the path names
+ * e.g. { "level1.level2": "value" }
+ * 
+ * Useful with Mongoose to create a safer way of updating nested documents.
+ * I.e. Create a whitelist of attributes a client is able to change and
+ * then check that the paths they are trying to set is valid
+ * 
+ * @param {Object}      Nested object e.g. { level1: { level2: 'value' } }
+ * @return {Object}      Shallow object with path names e.g. { 'level1.level2': 'value' }
+ */
+mixins.flatten = function flatten(obj) {
+  var ret = {};
+
+  for (var key in obj) {
+    var val = obj[key];
+
+    if (val.constructor === Object) {
+      //Recursion for embedded objects
+      var obj2 = flatten(val);
+
+      for (var key2 in obj2) {
+        var val2 = obj2[key2];
+
+        ret[key+'.'+key2] = val2;
+      }
+    } else {
+      ret[key] = val;
+    }
+  }
+
+  return ret;
+};
+
+
+
+/**
  * Get a deeply nested object property without throwing an error
  *
  * Usage:
@@ -56,22 +92,6 @@ mixins.fetch = function fetch(collection, path, val) {
   });
 };
 
-/**
- * Plucks deeply nested values in an array
- *
- * @param {Object}    obj
- * @param {String}    Path
- * @return {Array}    Returns array of plucked values
- * @api public
- */
- 
-mixins.pluckPath = function(obj, path) {
-  var self = this;
-  
-  return this.map(obj, function(val) {
-    return self.path(val, path);
-  });
-}
 
 
 //Mixin to underscore and return the extended underscore

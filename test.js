@@ -1,5 +1,43 @@
 var _ = require('./index');
 
+
+exports['flatten'] = {
+  'converts nested object to single level object with paths': function(test) {
+    var input = {
+      foo: 'bar',
+      
+      child1: {
+        id: 123,
+        name: 'Child 1',
+        child2: { name: 'Child 2' }
+      }
+    };
+    
+    var expected = {
+      'foo': 'bar',
+      'child1.id': 123,
+      'child1.name': 'Child 1',
+      'child1.child2.name': 'Child 2'
+    };
+    
+    test.deepEqual(_.flatten(input), expected);
+    
+    test.done();
+  },
+  
+  'works with non-nested objects too': function(test) {
+    var input = {
+      id: 123,
+      name: 'foo'
+    };
+    
+    test.deepEqual(_.flatten(input), input);
+    
+    test.done();
+  }
+};
+
+
 exports['path'] = {
   setUp: function(done) {
     this.obj = {
@@ -76,31 +114,3 @@ exports['fetch'] = {
     test.done();
   }
 };
-
-exports['pluckPath'] = {
-  setUp: function(done) {
-    this.collection = [
-      { id: 10, name: 'Name 1', child: { name: 'child1' } },
-      { id: 11, name: 'Name 2', child: { name: 'child2' } },
-      { id: 12, name: 'Name 3', child: { name: 'child3' } },
-      { id: 13 },
-      { id: 14, name: 'Name 4', child: { name: 'child4' } },      
-    ];
-    
-    done();
-  },
-  
-  'returns plucked values including not found values': function(test) {
-    test.same(['Name 1', 'Name 2', 'Name 3', undefined, 'Name 4'], _.pluckPath(this.collection, 'name'));
-    test.same(['child1', 'child2', 'child3', undefined, 'child4'], _.pluckPath(this.collection, 'child.name'));
-    
-    test.done();
-  },
-  
-  'can be chained': function(test) {
-    test.same(['Name 1', 'Name 2', 'Name 3', 'Name 4'], _.chain(this.collection).pluckPath('name').without([undefined]).value());
-    
-    test.done();
-    
-  }
-}
