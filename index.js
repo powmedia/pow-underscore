@@ -8,11 +8,34 @@ var mixins = {};
 /**
  * Alias to console.log
  */
-mixins.log = function() {
+mixins.log = function log() {
   if (!console || !console.log) return;
   
   console.log.apply(null, arguments);
 };
+
+
+/**
+ * Merge 2 objects. Properties of the second object will overwrite the first. Similar to _.extend but deep.
+ *
+ * @param {Object}  First object which will contain the merged properties
+ * @param {Object}  Second object
+ * @return {Object} The object (now merged with object2)
+ */
+mixins.extendDeep = function extendDeep(obj1, obj2) {
+  for (var p in obj2) {
+    if (!obj2.hasOwnProperty(p)) continue;
+
+    if (obj2[p] && obj2[p].constructor == Object) {
+        //Recursion
+      extendDeep(obj1[p], obj2[p]);
+    } else {
+      obj1[p] = obj2[p];
+    }
+  }
+
+  return obj1;
+},
 
 
 
