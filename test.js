@@ -1,6 +1,49 @@
 var _ = require('./index');
 
 
+exports['log'] = {
+  setUp: function(done) {
+    var self = this;
+    
+    self.calledWith = null;
+    
+    //Mock log function
+    self._log = console.log;
+    console.log = function() {
+      self.calledWith = Array.prototype.slice.call(arguments);
+    };
+    
+    done();
+  },
+  
+  tearDown: function(done) {
+    console.log = this._log;
+    
+    done();
+  },
+  
+  'aliases console.log': function(test) {
+    _.log('Msg', 123, [1,2,3], { a: 1, b: 2 });
+    
+    test.deepEqual(['Msg', 123, [1,2,3], { a: 1, b: 2 }], this.calledWith);
+    
+    test.done();
+  },
+  
+  'fails silently if console does not exist (e.g. IE)': function(test) {
+    console.log = undefined;
+    
+    try {
+      _.log('test');
+    } catch (e) {
+      test.ok(false, 'Should not have thrown error');
+    }
+    
+    test.done();
+  }
+};
+
+
 exports['flatten'] = {
   'converts nested object to single level object with paths': function(test) {
     var input = {

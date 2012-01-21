@@ -4,6 +4,18 @@ var _ = require('underscore');
 
 var mixins = {};
 
+
+/**
+ * Alias to console.log
+ */
+mixins.log = function() {
+  if (!console || !console.log) return;
+  
+  console.log.apply(null, arguments);
+};
+
+
+
 /**
  * Takes a nested object and returns a flattened, shallow object keyed with the path names
  * e.g. { "level1.level2": "value" }
