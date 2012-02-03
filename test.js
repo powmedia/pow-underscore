@@ -260,6 +260,35 @@ exports['setPath'] = {
 };
 
 
+exports['pluckPath'] = {
+  setUp: function(done) {
+    this.collection = [
+      { id: 10, name: 'Name 1', child: { name: 'child1' } },
+      { id: 11, name: 'Name 2', child: { name: 'child2' } },
+      { id: 12, name: 'Name 3', child: { name: 'child3' } }
+    ];
+    
+    done();
+  },
+  
+  'plucks nested properties given a path - top level': function(test) {
+    var names = _.pluckPath(this.collection, 'name');
+    
+    test.same(names, ['Name 1', 'Name 2', 'Name 3']);
+    
+    test.done();
+  },
+  
+  'plucks nested properties given a path - top level': function(test) {
+    var names = _.pluckPath(this.collection, 'child.name');
+    
+    test.same(names, ['child1', 'child2', 'child3']);
+    
+    test.done();
+  }
+}
+
+
 exports['fetch'] = {
   setUp: function(done) {
     this.collection = [

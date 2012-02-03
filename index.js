@@ -152,6 +152,24 @@ var setPath = mixins.setPath = function setPath(obj, path, val) {
 
 
 /**
+ * _.pluck() with paths.
+ * 
+ * Gets the nested attribute from a collection
+ *
+ * @param {Array|Object}    Collection to pluck from
+ * @param {String}          Path e.g. 'user.name'
+ */
+var pluckPath = mixins.pluckPath = function pluckPath(collection, path) {
+  var pathFn = mixins.path;
+  
+  return _.map(collection, function(val) {
+    return pathFn(val, path);
+  });
+};
+
+
+
+/**
  * Find the first item in a collection that matches the given value.
  * Similar to 'find by ID' or 'find by slug' functionality.
  * 
