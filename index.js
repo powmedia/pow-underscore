@@ -8,7 +8,7 @@ var mixins = {};
 /**
  * Alias to console.log
  */
-mixins.log = function log() {
+var log = mixins.log = function log() {
   if (!console || !console.log) return;
   
   console.log.apply(null, arguments);
@@ -22,7 +22,7 @@ mixins.log = function log() {
  * @param {Object}  Second object
  * @return {Object} The object (now merged with object2)
  */
-mixins.extendDeep = function extendDeep(obj1, obj2) {
+var extendDeep = mixins.extendDeep = function extendDeep(obj1, obj2) {
   for (var p in obj2) {
     if (!obj2.hasOwnProperty(p)) continue;
 
@@ -40,6 +40,25 @@ mixins.extendDeep = function extendDeep(obj1, obj2) {
 
 
 /**
+ * Merges 2 objects, but uses paths (e.g. 'child1.child.property') to overwrite nested properties
+ *
+ * @param {Object}  Object to update
+ * @param {Object}  New values to override, using paths e.g. 'formContents.firstName'
+ * @return {Object}
+ */
+var extendPaths = mixins.extendPaths = function extendPaths(obj, attrs) {
+  if (!attrs) return obj;
+  
+  _.each(attrs, function(val, key) {
+    setPath(obj, key, val);
+  });
+  
+  return obj;
+}
+
+
+
+/**
  * Takes a nested object and returns a flattened, shallow object keyed with the path names
  * e.g. { "level1.level2": "value" }
  * 
@@ -50,7 +69,7 @@ mixins.extendDeep = function extendDeep(obj1, obj2) {
  * @param {Object}      Nested object e.g. { level1: { level2: 'value' } }
  * @return {Object}      Shallow object with path names e.g. { 'level1.level2': 'value' }
  */
-mixins.flatten = function flatten(obj) {
+var flatten = mixins.flatten = function flatten(obj) {
   var ret = {};
 
   for (var key in obj) {
@@ -86,7 +105,7 @@ mixins.flatten = function flatten(obj) {
  * @param {String}      Path e.g.  'foo.bar.baz'
  * @return {Mixed}      Returns undefined if the property is not found
  */
-mixins.path = function path(obj, path) {
+var path = mixins.path = function path(obj, path) {
   if (!obj) return obj;
   
   var fields = path.split(".");
@@ -102,10 +121,37 @@ mixins.path = function path(obj, path) {
 };
 
 
+/**
+ * Sets a deeply nested object property given a path.
+ * 
+ * @param {Object}  Object to set property on
+ * @param {String}  Object path e.g. 'user.name'
+ * @param {Mixed}   Value to set
+ */
+var setPath = mixins.setPath = function setPath(obj, path, val) {
+  var fields = path.split(".");
+  var result = obj;
+  for (var i = 0, n = fields.length; i < n; i++) {
+    var field = fields[i];
+
+    //If the last in the path, set the value
+    if (i === n - 1) {
+      result[field] = val;
+    } else {
+    //Create the child object if it doesn't exist
+    if (typeof result[field] === 'undefined') {
+        result[field] = {};
+    }
+
+      //Move onto the next part of the path
+      result = result[field];
+    }
+  }
+}
+
+
 
 /**
- * A shortcut for _.find()
- * 
  * Find the first item in a collection that matches the given value.
  * Similar to 'find by ID' or 'find by slug' functionality.
  * 
@@ -119,7 +165,7 @@ mixins.path = function path(obj, path) {
  * @param {Mixed} val
  * @return {Mixed}
  */
-mixins.fetch = function fetch(collection, path, val) {
+var fetch = mixins.fetch = function fetch(collection, path, val) {
   var self = this;
   
   return this.find(collection, function(item) {

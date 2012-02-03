@@ -97,6 +97,59 @@ exports['extendDeep'] = {
 };
 
 
+exports['extendPaths'] = {
+  'changes the first object and returns it - 1 level deep': function(test) {
+    var obj1 = {
+      a: 'A',
+      b: 'B',
+      c: 'C'
+    };
+    
+    var obj2 = {
+      a: 1,
+      c: 3
+    };
+    
+    var expected = {
+      a: 1,
+      b: 'B',
+      c: 3
+    };
+    
+    var result = _.extendPaths(obj1, obj2);
+    
+    test.same(obj1, result);
+    test.deepEqual(result, expected);
+    
+    test.done();
+  },
+  
+  'changes the first object and returns it - multiple levels': function(test) {
+    var obj1 = {
+      a: { a: 'A', b: 'B' },
+      b: { a: 'A', b: 'B' }
+    };
+    
+    var obj2 = {
+      'a.a': 1,
+      'b.b': 2
+    };
+    
+    var expected = {
+      a: { a: 1, b: 'B' },
+      b: { a: 'A', b: 2 }
+    };
+    
+    var result = _.extendPaths(obj1, obj2);
+    
+    test.same(obj1, result);
+    test.deepEqual(result, expected);
+    
+    test.done();
+  }
+};
+
+
 exports['flatten'] = {
   'converts nested object to single level object with paths': function(test) {
     var input = {
@@ -170,6 +223,37 @@ exports['path'] = {
   'handles null or undefined': function(test) {
     test.same(undefined, _.path(undefined, 'test'));
     test.same(null, _.path(null, 'test'));
+    
+    test.done();
+  }
+};
+
+
+exports['setPath'] = {
+  'sets an existing path': function(test) {
+    var obj = {
+      child1: {
+        foo: 'bar'
+      }
+    };
+    
+    _.setPath(obj, 'child1.foo', 'BAR');
+    
+    test.same(obj.child1.foo, 'BAR');
+    
+    test.done();
+  },
+  
+  'sets a new path, creating the nested objects as necessary': function(test) {
+    var obj = {
+      child1: {
+        foo: 'bar'
+      }
+    };
+    
+    _.setPath(obj, 'child1.child2.child3.foo', 'bar');
+    
+    test.same(obj.child1.child2.child3.foo, 'bar');
     
     test.done();
   }
