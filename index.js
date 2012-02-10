@@ -193,6 +193,18 @@ var fetch = mixins.fetch = function fetch(collection, path, val) {
 
 
 
+/**
+ * Capitalise the first letter in a string
+ * 
+ * @param {String} string
+ * @return {String}
+ */
+var capitalize = mixins.capitalize = function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
+};
+
+
+
 //Mixin to underscore and return the extended underscore
 _.mixin(mixins);
 

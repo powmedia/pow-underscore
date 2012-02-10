@@ -323,3 +323,15 @@ exports['fetch'] = {
     test.done();
   }
 };
+
+
+exports['capitalize'] = {
+  'capitalizes a string': function(test) {
+    test.same(_.capitalize('HELLO'), 'Hello');
+    test.same(_.capitalize('hello there'), 'Hello there');
+    test.same(_.capitalize("What's your name?"), "What's your name?");
+    test.same(_.capitalize('bob.'), 'Bob.');
+    
+    test.done();
+  }
+}
