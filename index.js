@@ -27,7 +27,9 @@ var extendDeep = mixins.extendDeep = function extendDeep(obj1, obj2) {
     if (!obj2.hasOwnProperty(p)) continue;
 
     if (obj2[p] && obj2[p].constructor == Object) {
-        //Recursion
+      obj1[p] = obj1[p] || {};
+
+      //Recursion
       extendDeep(obj1[p], obj2[p]);
     } else {
       obj1[p] = obj2[p];
@@ -103,10 +105,11 @@ var flatten = mixins.flatten = function flatten(obj) {
  *
  * @param {Object}
  * @param {String}      Path e.g.  'foo.bar.baz'
+ * @param {Mixed}       Value to return if the path is not found (Default: undefined)
  * @return {Mixed}      Returns undefined if the property is not found
  */
-var path = mixins.path = function path(obj, path) {
-  if (!obj) return obj;
+var path = mixins.path = function path(obj, path, defaultValue) {
+  if (!obj) return defaultValue;
   
   var fields = path.split(".");
   var result = obj;
@@ -114,7 +117,7 @@ var path = mixins.path = function path(obj, path) {
     result = result[fields[i]];
 
     if (typeof result === 'undefined') {
-      return result;
+      return defaultValue;
     }
   }
   return result;

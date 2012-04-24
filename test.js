@@ -93,6 +93,30 @@ exports['extendDeep'] = {
     test.deepEqual(result, expected);
     
     test.done();
+  },
+
+  'creates embedded objects if they dont exist': function(test) {
+    var o1 = {
+      foo: 'bar'
+    };
+
+    var o2 = {
+      parent: {
+        child: 'child1'
+      }
+    };
+
+    var expected = {
+      foo: 'bar',
+      parent: {
+        child: 'child1'
+      }
+    };
+
+    var result = _.extendDeep(o1, o2);
+
+    test.same(expected, result);
+    test.done();
   }
 };
 
@@ -213,16 +237,22 @@ exports['path'] = {
     test.done();
   },
   
-  'returns undefined if property does not exist': function(test) {
+  'returns defaultValue if property does not exist': function(test) {
     test.same(undefined, _.path(this.obj, 'herua'));
     test.same(undefined, _.path(this.obj, 'child1.guhrs'));
+
+    test.same('foo', _.path(this.obj, 'heruafaea', 'foo'));
+    test.same('foo', _.path(this.obj, 'child1.gadweuhrs', 'foo'));
     
     test.done();
   },
   
-  'handles null or undefined': function(test) {
+  'handles null or undefined passed as object': function(test) {
     test.same(undefined, _.path(undefined, 'test'));
-    test.same(null, _.path(null, 'test'));
+    test.same('foo', _.path(undefined, 'test', 'foo'));
+
+    test.same(undefined, _.path(null, 'test'));
+    test.same('foo', _.path(null, 'test', 'foo'));
     
     test.done();
   }
