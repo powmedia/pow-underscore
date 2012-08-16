@@ -365,3 +365,31 @@ exports['capitalize'] = {
     test.done();
   }
 }
+
+
+exports['getChangedAttributes'] = {
+  'returns changed attributes with the new values': function(test) {
+    var o1 = {
+      foo: { val: 1 },
+      bar: { val: 2 },
+      baz: { val: 3 }
+    };
+
+    var o2 = {
+      foo: { val: 2 },
+      bar: { val: 2 },
+      baz: { val: 4 }
+    }
+
+    var changes = _.getChangedAttributes(o1, o2);
+
+    var expectedChanges = {
+      'foo.val': 2,
+      'baz.val': 4
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  }
+}

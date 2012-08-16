@@ -207,6 +207,31 @@ var capitalize = mixins.capitalize = function capitalize(string) {
 };
 
 
+/**
+ * Compares the differences between two objects and returns a new object with the changed properties.
+ * The returned object contains the new values.
+ *
+ * Supports nested objects by flattening them.
+ *
+ * @param {Object} oldObj
+ * @param {Object} newObj
+ * 
+ * @return {Object}
+ */
+var getChangedAttributes = mixins.getChangedAttributes = function getChangedAttributes(oldObj, newObj) {
+  oldObj = flatten(oldObj);
+  newObj = flatten(newObj);
+
+  var val, changed = null;
+  for (var attr in newObj) {
+    if (_.isEqual(oldObj[attr], (val = newObj[attr]))) continue;
+    (changed || (changed = {}))[attr] = val;
+  }
+
+  return changed;
+}
+
+
 
 //Mixin to underscore and return the extended underscore
 _.mixin(mixins);
