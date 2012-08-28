@@ -207,6 +207,27 @@ exports['flatten'] = {
     test.deepEqual(_.flatten(input), input);
     
     test.done();
+  },
+
+  'with Date objects': function(test) {
+    var d1 = new Date,
+        d2 = new Date;
+
+    var input = {
+      foo: d1,
+      bar: {
+        baz: d2
+      }
+    };
+    
+    var expected = {
+      'foo': d1,
+      'bar.baz': d2
+    };
+    
+    test.deepEqual(_.flatten(input), expected);
+    
+    test.done();
   }
 };
 
@@ -367,7 +388,7 @@ exports['capitalize'] = {
 }
 
 
-exports['getChangedAttributes'] = {
+exports['getChanges'] = {
   'returns changed attributes with the new values': function(test) {
     var o1 = {
       foo: { val: 1 },
@@ -381,11 +402,41 @@ exports['getChangedAttributes'] = {
       baz: { val: 4 }
     }
 
-    var changes = _.getChangedAttributes(o1, o2);
+    var changes = _.getChanges(o1, o2);
 
     var expectedChanges = {
       'foo.val': 2,
       'baz.val': 4
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  },
+
+  'with nested objects': function(test) {
+    var o1 = {
+      foo: {
+        child1: {
+          name: 'abc'
+        }
+      },
+      bar: { val: 2 }
+    };
+
+    var o2 = {
+      foo: {
+        child1: {
+          name: 'def'
+        }
+      },
+      bar: { val: 2 }
+    }
+
+    var changes = _.getChanges(o1, o2);
+
+    var expectedChanges = {
+      'foo.child1.name': 'def'
     };
 
     test.same(changes, expectedChanges);

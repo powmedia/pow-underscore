@@ -77,7 +77,7 @@ var flatten = mixins.flatten = function flatten(obj) {
   for (var key in obj) {
     var val = obj[key];
 
-    if (val.constructor === Object) {
+    if (val.constructor.name == 'Object') {
       //Recursion for embedded objects
       var obj2 = flatten(val);
 
@@ -208,29 +208,27 @@ var capitalize = mixins.capitalize = function capitalize(string) {
 
 
 /**
- * Compares the differences between two objects and returns a new object with the changed properties.
- * The returned object contains the new values.
+ * Compares two objects and returns a new object with the changed properties.
  *
- * Supports nested objects by flattening them.
- *
- * @param {Object} oldObj
- * @param {Object} newObj
+ * @param {Object} o1
+ * @param {Object} o2
  * 
  * @return {Object}
  */
-var getChangedAttributes = mixins.getChangedAttributes = function getChangedAttributes(oldObj, newObj) {
-  oldObj = flatten(oldObj);
-  newObj = flatten(newObj);
+var getChanges = mixins.getChanges = function getChanges(o1, o2) {
+  var val,
+      changed = {},
+      o1 = flatten(o1),
+      o2 = flatten(o2);
 
-  var val, changed = null;
-  for (var attr in newObj) {
-    if (_.isEqual(oldObj[attr], (val = newObj[attr]))) continue;
-    (changed || (changed = {}))[attr] = val;
+  for (var attr in o2) {
+    if (_.isEqual(o1[attr], (val = o2[attr]))) continue;
+
+    changed[attr] = val;
   }
 
   return changed;
 }
-
 
 
 //Mixin to underscore and return the extended underscore
