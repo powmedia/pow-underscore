@@ -391,6 +391,31 @@ exports['capitalize'] = {
 exports['getChanges'] = {
   'returns changed attributes with the new values': function(test) {
     var o1 = {
+      foo: 1,
+      bar: 2,
+      baz: 3
+    };
+
+    var o2 = {
+      foo: 1,
+      bar: 4,
+      baz: 6
+    }
+
+    var changes = _.getChanges(o1, o2);
+
+    var expectedChanges = {
+      bar: 4,
+      baz: 6
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  },
+
+  'with nested objects': function(test) {
+    var o1 = {
       foo: { val: 1 },
       bar: { val: 2 },
       baz: { val: 3 }
@@ -403,6 +428,39 @@ exports['getChanges'] = {
     }
 
     var changes = _.getChanges(o1, o2);
+
+    var expectedChanges = {
+      foo: {
+        val: 2
+      },
+      baz: {
+        val: 4
+      }
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  }
+}
+
+
+
+exports['getPathChanges'] = {
+  'returns changed attributes with the new values': function(test) {
+    var o1 = {
+      foo: { val: 1 },
+      bar: { val: 2 },
+      baz: { val: 3 }
+    };
+
+    var o2 = {
+      foo: { val: 2 },
+      bar: { val: 2 },
+      baz: { val: 4 }
+    }
+
+    var changes = _.getPathChanges(o1, o2);
 
     var expectedChanges = {
       'foo.val': 2,
@@ -433,7 +491,7 @@ exports['getChanges'] = {
       bar: { val: 2 }
     }
 
-    var changes = _.getChanges(o1, o2);
+    var changes = _.getPathChanges(o1, o2);
 
     var expectedChanges = {
       'foo.child1.name': 'def'

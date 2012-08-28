@@ -209,6 +209,7 @@ var capitalize = mixins.capitalize = function capitalize(string) {
 
 /**
  * Compares two objects and returns a new object with the changed properties.
+ * This version is 1 level deep, just returning top level objects rather than changed paths.
  *
  * @param {Object} o1
  * @param {Object} o2
@@ -216,6 +217,30 @@ var capitalize = mixins.capitalize = function capitalize(string) {
  * @return {Object}
  */
 var getChanges = mixins.getChanges = function getChanges(o1, o2) {
+  var val,
+      changed = {};
+
+  for (var attr in o2) {
+    if (_.isEqual(o1[attr], (val = o2[attr]))) continue;
+
+    changed[attr] = val;
+  }
+
+  return changed;
+};
+
+
+/**
+ * Compares two objects and returns a new object with the changed properties.
+ * Works on deep objects using paths, so only singular changes in nested objects are
+ * returned, in path names.
+ *
+ * @param {Object} o1
+ * @param {Object} o2
+ * 
+ * @return {Object}
+ */
+var getPathChanges = mixins.getPathChanges = function getPathChanges(o1, o2) {
   var val,
       changed = {},
       o1 = flatten(o1),
