@@ -93,6 +93,30 @@ exports['extendDeep'] = {
     test.deepEqual(result, expected);
     
     test.done();
+  },
+
+  'creates embedded objects if they dont exist': function(test) {
+    var o1 = {
+      foo: 'bar'
+    };
+
+    var o2 = {
+      parent: {
+        child: 'child1'
+      }
+    };
+
+    var expected = {
+      foo: 'bar',
+      parent: {
+        child: 'child1'
+      }
+    };
+
+    var result = _.extendDeep(o1, o2);
+
+    test.same(expected, result);
+    test.done();
   }
 };
 
@@ -183,6 +207,27 @@ exports['flatten'] = {
     test.deepEqual(_.flatten(input), input);
     
     test.done();
+  },
+
+  'with Date objects': function(test) {
+    var d1 = new Date,
+        d2 = new Date;
+
+    var input = {
+      foo: d1,
+      bar: {
+        baz: d2
+      }
+    };
+    
+    var expected = {
+      'foo': d1,
+      'bar.baz': d2
+    };
+    
+    test.deepEqual(_.flatten(input), expected);
+    
+    test.done();
   }
 };
 
@@ -213,16 +258,22 @@ exports['path'] = {
     test.done();
   },
   
-  'returns undefined if property does not exist': function(test) {
+  'returns defaultValue if property does not exist': function(test) {
     test.same(undefined, _.path(this.obj, 'herua'));
     test.same(undefined, _.path(this.obj, 'child1.guhrs'));
+
+    test.same('foo', _.path(this.obj, 'heruafaea', 'foo'));
+    test.same('foo', _.path(this.obj, 'child1.gadweuhrs', 'foo'));
     
     test.done();
   },
   
-  'handles null or undefined': function(test) {
+  'handles null or undefined passed as object': function(test) {
     test.same(undefined, _.path(undefined, 'test'));
-    test.same(null, _.path(null, 'test'));
+    test.same('foo', _.path(undefined, 'test', 'foo'));
+
+    test.same(undefined, _.path(null, 'test'));
+    test.same('foo', _.path(null, 'test', 'foo'));
     
     test.done();
   }
@@ -323,3 +374,131 @@ exports['fetch'] = {
     test.done();
   }
 };
+
+
+exports['capitalize'] = {
+  'capitalizes a string': function(test) {
+    test.same(_.capitalize('HELLO'), 'Hello');
+    test.same(_.capitalize('hello there'), 'Hello there');
+    test.same(_.capitalize("What's your name?"), "What's your name?");
+    test.same(_.capitalize('bob.'), 'Bob.');
+    
+    test.done();
+  }
+}
+
+
+exports['getChanges'] = {
+  'returns changed attributes with the new values': function(test) {
+    var o1 = {
+      foo: 1,
+      bar: 2,
+      baz: 3
+    };
+
+    var o2 = {
+      foo: 1,
+      bar: 4,
+      baz: 6
+    }
+
+    var changes = _.getChanges(o1, o2);
+
+    var expectedChanges = {
+      bar: 4,
+      baz: 6
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  },
+
+  'with nested objects': function(test) {
+    var o1 = {
+      foo: { val: 1 },
+      bar: { val: 2 },
+      baz: { val: 3 }
+    };
+
+    var o2 = {
+      foo: { val: 2 },
+      bar: { val: 2 },
+      baz: { val: 4 }
+    }
+
+    var changes = _.getChanges(o1, o2);
+
+    var expectedChanges = {
+      foo: {
+        val: 2
+      },
+      baz: {
+        val: 4
+      }
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  }
+}
+
+
+
+exports['getPathChanges'] = {
+  'returns changed attributes with the new values': function(test) {
+    var o1 = {
+      foo: { val: 1 },
+      bar: { val: 2 },
+      baz: { val: 3 }
+    };
+
+    var o2 = {
+      foo: { val: 2 },
+      bar: { val: 2 },
+      baz: { val: 4 }
+    }
+
+    var changes = _.getPathChanges(o1, o2);
+
+    var expectedChanges = {
+      'foo.val': 2,
+      'baz.val': 4
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  },
+
+  'with nested objects': function(test) {
+    var o1 = {
+      foo: {
+        child1: {
+          name: 'abc'
+        }
+      },
+      bar: { val: 2 }
+    };
+
+    var o2 = {
+      foo: {
+        child1: {
+          name: 'def'
+        }
+      },
+      bar: { val: 2 }
+    }
+
+    var changes = _.getPathChanges(o1, o2);
+
+    var expectedChanges = {
+      'foo.child1.name': 'def'
+    };
+
+    test.same(changes, expectedChanges);
+
+    test.done();
+  }
+}

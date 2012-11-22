@@ -27,7 +27,9 @@ var extendDeep = mixins.extendDeep = function extendDeep(obj1, obj2) {
     if (!obj2.hasOwnProperty(p)) continue;
 
     if (obj2[p] && obj2[p].constructor == Object) {
-        //Recursion
+      obj1[p] = obj1[p] || {};
+
+      //Recursion
       extendDeep(obj1[p], obj2[p]);
     } else {
       obj1[p] = obj2[p];
@@ -75,7 +77,7 @@ var flatten = mixins.flatten = function flatten(obj) {
   for (var key in obj) {
     var val = obj[key];
 
-    if (val.constructor === Object) {
+    if (val.constructor.name == 'Object') {
       //Recursion for embedded objects
       var obj2 = flatten(val);
 
@@ -103,10 +105,11 @@ var flatten = mixins.flatten = function flatten(obj) {
  *
  * @param {Object}
  * @param {String}      Path e.g.  'foo.bar.baz'
+ * @param {Mixed}       Value to return if the path is not found (Default: undefined)
  * @return {Mixed}      Returns undefined if the property is not found
  */
-var path = mixins.path = function path(obj, path) {
-  if (!obj) return obj;
+var path = mixins.path = function path(obj, path, defaultValue) {
+  if (!obj) return defaultValue;
   
   var fields = path.split(".");
   var result = obj;
@@ -114,7 +117,7 @@ var path = mixins.path = function path(obj, path) {
     result = result[fields[i]];
 
     if (typeof result === 'undefined') {
-      return result;
+      return defaultValue;
     }
   }
   return result;
@@ -191,6 +194,66 @@ var fetch = mixins.fetch = function fetch(collection, path, val) {
   });
 };
 
+
+
+/**
+ * Capitalise the first letter in a string
+ * 
+ * @param {String} string
+ * @return {String}
+ */
+var capitalize = mixins.capitalize = function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
+};
+
+
+/**
+ * Compares two objects and returns a new object with the changed properties.
+ * This version is 1 level deep, just returning top level objects rather than changed paths.
+ *
+ * @param {Object} o1
+ * @param {Object} o2
+ * 
+ * @return {Object}
+ */
+var getChanges = mixins.getChanges = function getChanges(o1, o2) {
+  var val,
+      changed = {};
+
+  for (var attr in o2) {
+    if (_.isEqual(o1[attr], (val = o2[attr]))) continue;
+
+    changed[attr] = val;
+  }
+
+  return changed;
+};
+
+
+/**
+ * Compares two objects and returns a new object with the changed properties.
+ * Works on deep objects using paths, so only singular changes in nested objects are
+ * returned, in path names.
+ *
+ * @param {Object} o1
+ * @param {Object} o2
+ * 
+ * @return {Object}
+ */
+var getPathChanges = mixins.getPathChanges = function getPathChanges(o1, o2) {
+  var val,
+      changed = {},
+      o1 = flatten(o1),
+      o2 = flatten(o2);
+
+  for (var attr in o2) {
+    if (_.isEqual(o1[attr], (val = o2[attr]))) continue;
+
+    changed[attr] = val;
+  }
+
+  return changed;
+}
 
 
 //Mixin to underscore and return the extended underscore
